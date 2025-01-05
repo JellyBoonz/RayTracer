@@ -2,17 +2,17 @@
 
 int Sphere::nextId = 0;
 
-Sphere::Sphere() : id(nextId++) {}
+Sphere::Sphere() : Intersectable(), id(nextId++) {}
 
-Matrix Sphere::getTransform()
+Matrix Sphere::getTransform() const
 {
-    return mat;
+    return Intersectable::mat;
 }
 
 Matrix Sphere::setTransform(Matrix t)
 {
-    mat = t;
-    return mat;
+    Intersectable::mat = t;
+    return Intersectable::mat;
 }
 
 const Tuple Sphere::normalAt(Tuple worldPoint) const

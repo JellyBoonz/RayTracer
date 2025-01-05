@@ -8,7 +8,7 @@ class Computations;
 #include "Sphere.h"
 #include "Color.h"
 #include "Transforms.h"
-#include "Intersection.h"
+#include "Intersections.h"
 
 class Ray;
 
@@ -22,7 +22,8 @@ public:
     void render();
     void clear();
     Color shadeHit(Computations comps);
+    bool isShadowed(Tuple &point);
     Color colorAt(Ray &ray);
-    std::vector<Intersection> getIntersections(Ray &ray);
+    Intersections getIntersections(Ray &ray);
 };
 #endif

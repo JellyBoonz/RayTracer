@@ -3,55 +3,49 @@
 #include "Matrix.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "Plane.h"
 #include "Intersections.h"
 #include "World.h"
 #include "Camera.h"
 #include "Transforms.h"
 #include "Ray.h"
+#include "Pattern.h"
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 
 int main(void)
 {
-    Sphere floor;
-    Transforms floorTransform;
-    floorTransform.scale(10, 0.01, 10);
+    StripePattern stripe = StripePattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0));
+    PerturbedGradientPattern gradient = PerturbedGradientPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), 0.8);
+    // RingPattern ring = RingPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0));
+    // PerturbedRingPattern ring = PerturbedRingPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), 0.8);
+    PerturbedStripePattern perturbedStripe = PerturbedStripePattern(Color(0.0, 0.7, 0.3), Color(0.0, 0.4, 0.0), 0.5);
+
+    Plane floor;
     floor.material.color = Color(1, 0.9, 0.9);
+    // floor.material.pattern = std::make_shared<StripePattern>(stripe);
     floor.material.specular = 0;
-    floor.setTransform(floorTransform.getTransformMat());
-
-    Sphere leftWall;
-    Transforms leftWallTransform;
-    leftWallTransform.translate(0, 0, 5)
-        .rotateY(M_PI / 4)
-        .rotateX(M_PI / 2)
-        .scale(10, 0.01, 10);
-    leftWall.material = floor.material;
-    leftWall.setTransform(leftWallTransform.getTransformMat());
-
-    Sphere rightWall;
-    Transforms rightWallTransform;
-    rightWallTransform.translate(0, 0, 5)
-        .rotateY(-M_PI / 4)
-        .rotateX(M_PI / 2)
-        .scale(10, 0.01, 10);
-    rightWall.material = floor.material;
-    rightWall.setTransform(rightWallTransform.getTransformMat());
 
     Sphere middle;
     Transforms middleTransform;
     middleTransform.translate(-0.5, 1, 0.5);
+    middle.setTransform(middleTransform.getTransformMat());
+
+    Transforms stripeTransform;
+    stripeTransform.rotateY(-M_PI / 4).rotateZ(-M_PI / 4).scale(0.25, 0.25, 0.25);
+    perturbedStripe.setTransform(stripeTransform.getTransformMat());
+    middle.material.pattern = std::make_shared<PerturbedStripePattern>(perturbedStripe);
     middle.material.color = Color(0.1, 1, 0.5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.setTransform(middleTransform.getTransformMat());
 
     Sphere right;
     Transforms rightTransform;
     rightTransform.translate(1.5, 0.5, -0.5)
         .scale(0.5, 0.5, 0.5);
     right.material.color = Color(0.5, 1, 0.1);
+    right.material.pattern = std::make_shared<PerturbedGradientPattern>(gradient);
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
     right.setTransform(rightTransform.getTransformMat());
@@ -61,15 +55,14 @@ int main(void)
     leftTransform.translate(-1.5, 0.33, -0.75)
         .scale(0.33, 0.33, 0.33);
     left.material.color = Color(1, 0.8, 0.1);
+    right.material.pattern = std::make_shared<StripePattern>(stripe);
     left.material.diffuse = 0.7;
     left.material.specular = 0.3;
     left.setTransform(leftTransform.getTransformMat());
 
     World w = World();
     w.clear();
-    w.objects.push_back(std::make_shared<Sphere>(floor));
-    w.objects.push_back(std::make_shared<Sphere>(leftWall));
-    w.objects.push_back(std::make_shared<Sphere>(rightWall));
+    w.objects.push_back(std::make_shared<Plane>(floor));
     w.objects.push_back(std::make_shared<Sphere>(left));
     w.objects.push_back(std::make_shared<Sphere>(middle));
     w.objects.push_back(std::make_shared<Sphere>(right));

@@ -94,3 +94,46 @@ TEST(WorldTests, ColorAtIntersectionBehindRay)
 
     EXPECT_EQ(c, inner->material.color);
 }
+
+TEST(WorldTests, NoShadowWhenNoObjectBetweenPointAndLight)
+{
+    World w = World();
+    Tuple p = Tuple::point(0, 10, 0);
+    EXPECT_FALSE(w.isShadowed(p));
+}
+
+TEST(WorldTests, ShadowWhenObjectBetweenPointAndLight)
+{
+    World w = World();
+    Tuple p = Tuple::point(10, -10, 10);
+    EXPECT_TRUE(w.isShadowed(p));
+}
+
+TEST(WorldTests, NoShadowWhenObjectBehindLight)
+{
+    World w = World();
+    Tuple p = Tuple::point(-20, 20, -20);
+    EXPECT_FALSE(w.isShadowed(p));
+}
+
+TEST(WorldTests, ShadeHitIsGivenAnIntersectionInShadow)
+{
+    World w = World();
+    w.light = Light(Tuple::point(0, 0, -10), Color(1, 1, 1));
+    Sphere s1;
+    Sphere s2;
+    Transforms s2Transform;
+    s2Transform.translate(0, 0, 10);
+    s2.setTransform(s2Transform.getTransformMat());
+
+    w.clear();
+    w.objects.push_back(std::make_shared<Sphere>(s1));
+    w.objects.push_back(std::make_shared<Sphere>(s2));
+
+    Ray r(Tuple::point(0, 0, 5), Tuple::vector(0, 0, 1));
+    Intersection i(4, &s2);
+    Computations comps = Computations(i, r);
+    Color c = w.shadeHit(comps);
+
+    EXPECT_EQ(c, Color(0.1, 0.1, 0.1));
+}

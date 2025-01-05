@@ -27,3 +27,18 @@ TEST(IntersectionTests, HitWhenIntersectionOccursOnOutside)
 
     EXPECT_FALSE(comps.inside);
 }
+
+TEST(IntersectionTests, TheHitShouldOffsetThePoint)
+{
+    Ray r(Tuple::point(0, 0, -5), Tuple::vector(0, 0, 1));
+    Sphere s = Sphere();
+    Transforms t;
+    t.translate(0, 0, 1);
+    s.setTransform(t.getTransformMat());
+
+    Intersection i(5, &s);
+    Computations comps = Computations(i, r);
+
+    EXPECT_LT(comps.overPoint.z, -EPSILON / 2);
+    EXPECT_GT(comps.point.z, comps.overPoint.z);
+}

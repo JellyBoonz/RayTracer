@@ -11,16 +11,15 @@ class Sphere : public Intersectable
 private:
     int id;
     static int nextId; // Static allows the data to persist across all instantiations.
-    Matrix mat = Matrix::ID_MAT;
 
-public:
+    public:
     Tuple center = Tuple::point(0, 0, 0);
     float radius = 1.0;
 
     Sphere();
 
-    Matrix getTransform() override;
-    Matrix setTransform(Matrix t);
+    Matrix getTransform() const override;
+    Matrix setTransform(Matrix t) override;
 
     const Tuple normalAt(Tuple worldPoint) const override;
 };

@@ -11,7 +11,7 @@ Tuple Ray::position(float d)
     return origin + direction * d;
 }
 
-std::vector<Intersection> Ray::intersect(Sphere &s)
+std::vector<Intersection> Ray::intersectSphere(Sphere &s)
 {
     Transforms t;
     Matrix inverseTransform = s.getTransform().inverse();
@@ -52,3 +52,33 @@ std::vector<Intersection> Ray::intersect(Sphere &s)
     return xs;
 }
 
+std::vector<Intersection> Ray::intersectPlane(Plane &p)
+{
+    std::vector<Intersection> xs;
+    if (abs(direction.y) < EPSILON)
+    {
+        return xs;
+    }
+
+    float t = -origin.y / direction.y;
+    Intersection i(t, &p);
+    xs.push_back(i);
+    return xs;
+}
+
+std::vector<Intersection> Ray::intersect(Intersectable *object)
+{
+    if (Sphere *s = dynamic_cast<Sphere *>(object))
+    {
+        return intersectSphere(*s);
+    }
+    else if (Plane *p = dynamic_cast<Plane *>(object))
+    {
+        return intersectPlane(*p);
+    }
+    else
+    {
+        std::vector<Intersection> xs;
+        return xs;
+    }
+}

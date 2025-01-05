@@ -4,6 +4,9 @@ set(SOURCES
     Light.cpp
     Tuple.cpp
     Matrix.cpp
+    Plane.h
+    Pattern.cpp
+    Noise.cpp
     Transforms.cpp
     Camera.h
     Ray.cpp

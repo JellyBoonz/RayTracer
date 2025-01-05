@@ -35,7 +35,7 @@ TEST(RayTests, SphereIntersection)
     Ray r(o, dir);
     Sphere s;
 
-    std::vector<Intersection> xs = r.intersect(s);
+    std::vector<Intersection> xs = r.intersect(&s);
 
     EXPECT_EQ(xs.size(), 2);
     EXPECT_EQ(xs[0].t, 4.0);
@@ -49,7 +49,7 @@ TEST(RayTests, RayInSphereIntersection)
     Ray r(o, dir);
     Sphere s;
 
-    std::vector<Intersection> xs = r.intersect(s);
+    std::vector<Intersection> xs = r.intersect(&s);
 
     EXPECT_EQ(xs.size(), 2);
     EXPECT_EQ(xs[0].t, -1.0);
@@ -159,7 +159,7 @@ TEST(RayTests, TransformRayBeforeIntersection)
 
     t.scale(2, 2, 2);
     s.setTransform(t.getTransformMat());
-    Intersections i = r.intersect(s);
+    Intersections i = r.intersect(&s);
 
     EXPECT_EQ(i.xs.size(), 2);
     EXPECT_EQ(i.xs[0].t, 3);

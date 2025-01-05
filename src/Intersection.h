@@ -8,7 +8,8 @@ class Intersection
 public:
     float t;
     const Intersectable *object;
-    Intersection() {};
+    // Initialize the intersection with a default constructor
+    Intersection() : t(0), object(nullptr) {}
     Intersection(float t, const Intersectable *obj) : t(t), object(obj) {}
 };
 

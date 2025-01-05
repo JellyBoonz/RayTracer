@@ -48,6 +48,14 @@ public:
             y + other.y,
             z + other.z);
     }
+
+    Color operator-(const Color &other) const
+    {
+        return Color(
+            x - other.x,
+            y - other.y,
+            z - other.z);
+    }
 };
 
 #endif

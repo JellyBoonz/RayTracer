@@ -27,7 +27,6 @@ public:
 
     Intersection hit()
     {
-        std::cout << "Intersections::hit()\n";
         for (const auto &intersection : xs)
         {
             if (intersection.t >= 0)

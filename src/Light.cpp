@@ -2,9 +2,20 @@
 
 Light::Light(Tuple position, Color intensity) : position(position), intensity(intensity) {}
 
-Color Light::Lighting(Tuple point, Tuple normal, Tuple eye, Material material)
+Color Light::Lighting(Tuple point, Tuple normal, Tuple eye, Material material, const Intersectable &object, bool inShadow)
 {
-    Color effectiveColor = material.color * intensity;
+    Color color;
+
+    if (material.pattern)
+    {
+        color = material.pattern->patternAtObject(object, point);
+    }
+    else
+    {
+        color = material.color;
+    }
+
+    Color effectiveColor = color * intensity;
     Tuple lightVector = (position - point).normalize();
     Color ambient = effectiveColor * material.ambient;
     double lightDotNormal = lightVector.dot(normal);
@@ -12,7 +23,7 @@ Color Light::Lighting(Tuple point, Tuple normal, Tuple eye, Material material)
     Color diffuse;
     Color specular;
 
-    if (lightDotNormal < 0)
+    if (lightDotNormal < 0 || inShadow)
     {
         diffuse = Color(0.0, 0.0, 0.0);
         specular = Color(0.0, 0.0, 0.0);

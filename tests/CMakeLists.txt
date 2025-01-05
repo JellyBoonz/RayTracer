@@ -44,6 +44,16 @@ add_executable(MatrixTests MatrixTests.cpp ../src/Matrix.cpp ../src/Tuple.cpp)
 target_link_libraries(MatrixTests PRIVATE gtest gtest_main pthread)
 add_test(NAME MatrixTests COMMAND MatrixTests)
 
+# Pattern Tests
+add_executable(PatternTests PatternTests.cpp ../src/Intersectable.h ../src/Pattern.cpp ../src/Tuple.cpp ../src/Matrix.cpp ../src/Ray.cpp ../src/Sphere.cpp ../src/Transforms.cpp ../src/World.cpp ../src/Light.cpp ../src/Noise.cpp)
+target_link_libraries(PatternTests PRIVATE gtest gtest_main pthread)
+add_test(NAME PatternTests COMMAND PatternTests)
+
+# Plane Tests
+add_executable(PlaneTests PlaneTests.cpp ../src/Computations.h ../src/Intersection.h ../src/Tuple.cpp ../src/Matrix.cpp ../src/Ray.cpp ../src/Sphere.cpp ../src/Transforms.cpp)
+target_link_libraries(PlaneTests PRIVATE gtest gtest_main pthread)
+add_test(NAME PlaneTests COMMAND PlaneTests)
+
 # Transformation Tests
 add_executable(TransformationTests TransformationTests.cpp ../src/Ray.cpp ../src/Sphere.cpp ../src/Transforms.cpp ../src/Matrix.cpp ../src/Tuple.cpp ../src/World.cpp ../src/Light.cpp)
 target_link_libraries(TransformationTests PRIVATE gtest gtest_main pthread)
@@ -60,7 +70,7 @@ target_link_libraries(SphereTests PRIVATE gtest gtest_main pthread)
 add_test(NAME SphereTests COMMAND SphereTests)
 
 # Light Tests
-add_executable(LightTests LightTests.cpp ../src/Transforms.cpp ../src/Matrix.cpp ../src/Ray.cpp ../src/Tuple.cpp ../src/Light.cpp ../src/Sphere.cpp ../src/World.cpp)
+add_executable(LightTests LightTests.cpp ../src/Transforms.cpp ../src/Matrix.cpp ../src/Ray.cpp ../src/Tuple.cpp ../src/Light.cpp ../src/Sphere.cpp ../src/World.cpp ../src/Pattern.cpp ../src/Noise.cpp)
 target_link_libraries(LightTests PRIVATE gtest gtest_main pthread)
 add_test(NAME LightTests COMMAND LightTests)
 

@@ -94,3 +94,15 @@ TEST(SphereTest, SphereCanBeAssignedMaterial)
     EXPECT_EQ(s.material.specular, m.specular);
     EXPECT_EQ(s.material.shininess, m.shininess);
 }
+
+TEST(SphereTest, SphereIsAnIntersectableObject)
+{
+    Sphere s;
+    Intersectable *i = &s;
+    EXPECT_EQ(i->material.color, Color(1.0, 1.0, 1.0));
+    EXPECT_NEAR(i->material.ambient, 0.1, 1e-5);
+    EXPECT_NEAR(i->material.diffuse, 0.9, 1e-5);
+    EXPECT_NEAR(i->material.specular, 0.9, 1e-5);
+    EXPECT_NEAR(i->material.shininess, 200.0, 1e-5);
+    EXPECT_EQ(i->getTransform(), s.getTransform());
+}

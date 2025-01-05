@@ -4,7 +4,7 @@
 #include "Intersection.h"
 #include "Ray.h"
 
-const float EPSILON = 0.00001f;
+const float EPSILON = 0.001f;
 
 class Computations
 {

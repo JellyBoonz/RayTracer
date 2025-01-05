@@ -95,7 +95,7 @@ void Tuple::operator=(const Tuple &other)
     w = other.w;
 }
 
-Tuple Tuple::operator+(const Tuple &other)
+Tuple Tuple::operator+(const Tuple &other) const
 {
     return Tuple(x + other.x, y + other.y, z + other.z, w + other.w);
 }

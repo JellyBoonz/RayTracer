@@ -23,7 +23,7 @@ public:
 
 	bool operator==(const Tuple &other) const;
 	void operator=(const Tuple &other);
-	Tuple operator+(const Tuple &other);
+	Tuple operator+(const Tuple &other) const;
 	Tuple operator-(const Tuple &other);
 	Tuple operator-();
 	Tuple operator*(const double num);

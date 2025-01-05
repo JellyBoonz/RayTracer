@@ -12,9 +12,15 @@ protected:
 
 public:
     Material material;
+    Intersectable() : mat(Matrix::ID_MAT) {}
     virtual ~Intersectable() = default;
-    virtual Matrix getTransform()
+    virtual Matrix getTransform() const
     {
+        return mat;
+    };
+    virtual Matrix setTransform(Matrix t)
+    {
+        mat = t;
         return mat;
     };
     virtual const Tuple normalAt(Tuple worldPoint) const = 0;

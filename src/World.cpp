@@ -21,16 +21,13 @@ World::World()
     objects.push_back(s2);
 }
 
-std::vector<Intersection> World::getIntersections(Ray &ray)
+Intersections World::getIntersections(Ray &ray)
 {
     std::vector<Intersection> xs;
     for (auto &object : objects)
     {
-        if (auto sphere = std::dynamic_pointer_cast<Sphere>(object))
-        {
-            std::vector<Intersection> objectIntersections = ray.intersect(*sphere);
-            xs.insert(xs.end(), objectIntersections.begin(), objectIntersections.end());
-        }
+        std::vector<Intersection> objectIntersections = ray.intersect(object.get());
+        xs.insert(xs.end(), objectIntersections.begin(), objectIntersections.end());
     }
 
     sort(xs.begin(), xs.end(), [](const Intersection &a, const Intersection &b)
@@ -41,34 +38,40 @@ std::vector<Intersection> World::getIntersections(Ray &ray)
 Color World::shadeHit(Computations comps)
 {
     Color surface = Color(0, 0, 0);
-    for (auto &object : objects)
-    {
-        if (auto sphere = std::dynamic_pointer_cast<Sphere>(object))
-        {
-            surface = light.Lighting(comps.point, comps.normalv, comps.eyev, comps.object->material);
-        }
-    }
+    bool shadowed = isShadowed(comps.overPoint);
+    surface = light.Lighting(comps.point, comps.normalv, comps.eyev, comps.object->material, *comps.object, shadowed);
     return surface;
 }
 
 Color World::colorAt(Ray &ray)
 {
     auto intersections = getIntersections(ray);
-    if (intersections.empty())
-    {
-        return Color(0, 0, 0);
-    }
+    auto hit = intersections.hit();
 
-    for (const auto &intersection : intersections)
+    // check if object pointer is valid hit.t >= 0
+    if (hit.t >= 0 && hit.object != nullptr)
     {
-        if (intersection.t >= 0)
-        {
-            Computations comps(intersection, ray);
-            return shadeHit(comps);
-        }
+        Computations comps(hit, ray);
+        return shadeHit(comps);
     }
 
     return Color(0, 0, 0);
+}
+
+bool World::isShadowed(Tuple &point)
+{
+    Tuple v = light.position - point;
+    float distance = (v).magnitude();
+    Ray l(point, v.normalize());
+    auto intersections = getIntersections(l);
+    auto hit = intersections.hit();
+
+    if (hit.t < distance && hit.object != nullptr)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 void World::clear()
