@@ -207,5 +207,12 @@ TEST(TransformationTests, ArbitraryViewTransform)
         {0.76772, 0.60609, 0.12122, -2.82843},
         {-0.35857, 0.59761, -0.71714, 0.00000},
         {0.00000, 0.00000, 0.00000, 1.00000}};
-    EXPECT_EQ(viewTransform, expected);
+
+    for (int row = 0; row < 4; ++row)
+    {
+        for (int col = 0; col < 4; ++col)
+        {
+            EXPECT_NEAR(viewTransform.at(row, col), expected.at(row, col), 1e-5);
+        }
+    }
 }

@@ -2,9 +2,18 @@
 #define CANVAS_H
 
 #include "Color.h"
+#include <algorithm>
+#include <cmath>
 
 class Canvas
 {
+private:
+    // Custom clamp function
+    template <typename T>
+    T clamp(T value, T low, T high) {
+        return std::max(low, std::min(value, high));
+    }
+
 public:
     int width;
     int height;
@@ -42,9 +51,9 @@ public:
             for (int x = 0; x < width; x++)
             {
                 Color col = pixelAt(x, y);
-                int red = std::clamp(static_cast<int>(std::round(col.getRed() * 255)), 0, 255);
-                int green = std::clamp(static_cast<int>(std::round(col.getGreen() * 255)), 0, 255);
-                int blue = std::clamp(static_cast<int>(std::round(col.getBlue() * 255)), 0, 255);
+                int red = clamp(static_cast<int>(std::round(col.getRed() * 255)), 0, 255);
+                int green = clamp(static_cast<int>(std::round(col.getGreen() * 255)), 0, 255);
+                int blue = clamp(static_cast<int>(std::round(col.getBlue() * 255)), 0, 255);
                 std::string pixel = std::to_string(red) + " " +
                                     std::to_string(green) + " " +
                                     std::to_string(blue) + " ";

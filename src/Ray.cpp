@@ -2,6 +2,7 @@
 #include "Tuple.h"
 #include "Transforms.h"
 #include "Intersection.h"
+#include "Intersections.h"
 #include <algorithm>
 
 Ray::Ray(Tuple o, Tuple dir) : origin(o), direction(dir) {}
@@ -11,9 +12,14 @@ Tuple Ray::position(float d)
     return origin + direction * d;
 }
 
-std::vector<Intersection> Ray::intersectSphere(Sphere &s)
+Intersections Ray::intersectSphere(Sphere &s)
 {
     Transforms t;
+
+    // Why are we doing this?
+    // We need to transform the ray by the inverse of the sphere's transformation matrix
+    // The sphere is in world space, and the ray is in world space
+    // We want to transform the ray into the sphere's local space
     Matrix inverseTransform = s.getTransform().inverse();
     t.setTransformMat({inverseTransform});
 
@@ -47,8 +53,6 @@ std::vector<Intersection> Ray::intersectSphere(Sphere &s)
         xs.push_back(i2);
     }
 
-    sort(xs.begin(), xs.end(), [](const Intersection &a, const Intersection &b)
-         { return a.t < b.t; });
     return xs;
 }
 
@@ -70,7 +74,8 @@ std::vector<Intersection> Ray::intersect(Intersectable *object)
 {
     if (Sphere *s = dynamic_cast<Sphere *>(object))
     {
-        return intersectSphere(*s);
+        Intersections intersections = intersectSphere(*s);
+        return intersections.xs;
     }
     else if (Plane *p = dynamic_cast<Plane *>(object))
     {

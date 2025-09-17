@@ -35,7 +35,7 @@ public:
             }
         }
         // No valid intersection found
-        return Intersection();
+        return Intersection(std::numeric_limits<double>::infinity(), nullptr);
     }
 };
 

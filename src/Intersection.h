@@ -6,7 +6,7 @@
 class Intersection
 {
 public:
-    float t;
+    float t; // Distance along the ray where intersection occurs
     const Intersectable *object;
     // Initialize the intersection with a default constructor
     Intersection() : t(0), object(nullptr) {}

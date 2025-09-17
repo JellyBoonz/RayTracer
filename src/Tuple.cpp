@@ -50,6 +50,17 @@ Tuple Tuple::normalize()
     }
 }
 
+/**
+ * @brief Reflect a vector off a normal
+ * @param normal The normal to reflect off
+ * @return The reflected vector
+ * 
+ * @details proj_n(v) = (v dot n) n
+ * v = proj_n(v) + [v - proj_n(v)]
+ * Because r is opposite of v in its component parallel to n,
+ * r = -proj_n(v) + [v - proj_n(v)]
+ * r = v - 2(v dot n)n
+ */
 Tuple Tuple::reflect(Tuple &normal)
 {
     return *this - normal * (2.0 * dot(normal));
@@ -79,6 +90,9 @@ Tuple Tuple::cross(const Tuple &other)
     }
 }
 
+/**
+ * @brief Compare the components of tuples with a small epsilon
+ */
 bool Tuple::operator==(const Tuple &other) const
 {
     return std::abs(x - other.x) < 1e-5 &&

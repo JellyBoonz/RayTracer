@@ -4,6 +4,7 @@
 #include "Tuple.h"
 #include "Sphere.h"
 #include "Intersection.h"
+#include "Intersections.h"
 #include "Intersectable.h"
 #include "Plane.h"
 #include "World.h"
@@ -19,7 +20,7 @@ public:
 
     Ray(Tuple o, Tuple dir);
     Tuple position(float d);
-    std::vector<Intersection> intersectSphere(Sphere &s);
+    Intersections intersectSphere(Sphere &s);
     std::vector<Intersection> intersectPlane(Plane &p);
     std::vector<Intersection> intersect(Intersectable *object);
 };

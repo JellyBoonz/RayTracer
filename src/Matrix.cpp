@@ -119,6 +119,9 @@ const double Matrix::minor(int row, int col) const
     return minor;
 }
 
+/**
+ * @brief Finds the signed minor of a matrix
+ */
 const double Matrix::cofactor(int row, int col) const
 {
     int negative = (row + col) % 2 == 0 ? 1 : -1;
@@ -131,6 +134,7 @@ const Matrix Matrix::inverse() const
 {
     double det = determinant();
 
+    // Establishing if columns are linearly independent
     if (std::abs(det) < 1e-9)
     {
         throw std::invalid_argument("Matrix is not invertible");
@@ -185,7 +189,7 @@ bool Matrix::operator==(const Matrix &other) const
     {
         for (int j = 0; j < other.m_colSize; j++)
         {
-            if (m_matrix[i][j] != other.at(i, j))
+            if (std::abs(m_matrix[i][j] - other.at(i, j)) >= 1e-5)
             {
                 return false;
             }

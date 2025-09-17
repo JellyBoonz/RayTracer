@@ -17,7 +17,8 @@
 int main(void)
 {
     StripePattern stripe = StripePattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0));
-    PerturbedGradientPattern gradient = PerturbedGradientPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), 0.8);
+    // PerturbedGradientPattern gradient = PerturbedGradientPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), 0.8);
+    GradientPattern gradient = GradientPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0));
     // RingPattern ring = RingPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0));
     // PerturbedRingPattern ring = PerturbedRingPattern(Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), 0.8);
     PerturbedStripePattern perturbedStripe = PerturbedStripePattern(Color(0.0, 0.7, 0.3), Color(0.0, 0.4, 0.0), 0.5);
@@ -45,7 +46,7 @@ int main(void)
     rightTransform.translate(1.5, 0.5, -0.5)
         .scale(0.5, 0.5, 0.5);
     right.material.color = Color(0.5, 1, 0.1);
-    right.material.pattern = std::make_shared<PerturbedGradientPattern>(gradient);
+    right.material.pattern = std::make_shared<GradientPattern>(gradient);
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
     right.setTransform(rightTransform.getTransformMat());
