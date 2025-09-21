@@ -38,15 +38,34 @@ Intersections World::getIntersections(Ray &ray)
 Color World::shadeHit(Computations comps)
 {
     Color surface = Color(0, 0, 0);
-    bool shadowed = isShadowed(comps.overPoint);
+    bool shadowed = isShadowed(comps.overPoint, comps.object);
     surface = light.Lighting(comps.point, comps.normalv, comps.eyev, comps.object->material, *comps.object, shadowed);
-    return surface;
+
+    Color reflectedColor = this->reflectedColor(comps);
+
+    return surface + reflectedColor;
 }
 
-Color World::colorAt(Ray &ray)
+Color World::colorAt(Ray &ray, const Intersectable *excludeObject)
 {
     auto intersections = getIntersections(ray);
     auto hit = intersections.hit();
+
+    // Skip the excluded object to avoid self-intersection
+    if (excludeObject && hit.object == excludeObject)
+    {
+        auto it = std::find_if(intersections.xs.begin(), intersections.xs.end(),
+                               [&hit](const Intersection &i)
+                               { return i.t > hit.t; });
+        if (it != intersections.xs.end())
+        {
+            hit = *it;
+        }
+        else
+        {
+            hit = Intersection(std::numeric_limits<double>::infinity(), nullptr);
+        }
+    }
 
     // check if object pointer is valid hit.t >= 0
     if (hit.t >= 0 && hit.object != nullptr)
@@ -58,13 +77,41 @@ Color World::colorAt(Ray &ray)
     return Color(0, 0, 0);
 }
 
-bool World::isShadowed(Tuple &point)
+Color World::reflectedColor(Computations comps)
+{
+    if (comps.object->material.reflective == 0.0)
+    {
+        return Color(0.0, 0.0, 0.0);
+    }
+    Ray reflectRay(comps.overPoint, comps.reflectv);
+    Color c = colorAt(reflectRay, comps.object);
+
+    return c * comps.object->material.reflective;
+}
+
+bool World::isShadowed(Tuple &point, const Intersectable *excludeObject)
 {
     Tuple v = light.position - point;
     float distance = (v).magnitude();
     Ray l(point, v.normalize());
     auto intersections = getIntersections(l);
     auto hit = intersections.hit();
+
+    // Skip the excluded object to avoid self-intersection
+    if (excludeObject && hit.object == excludeObject)
+    {
+        auto it = std::find_if(intersections.xs.begin(), intersections.xs.end(),
+                               [&hit](const Intersection &i)
+                               { return i.t > hit.t; });
+        if (it != intersections.xs.end())
+        {
+            hit = *it;
+        }
+        else
+        {
+            hit = Intersection(std::numeric_limits<double>::infinity(), nullptr);
+        }
+    }
 
     if (hit.t < distance && hit.object != nullptr)
     {

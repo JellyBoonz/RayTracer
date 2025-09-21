@@ -22,8 +22,9 @@ public:
     void render();
     void clear();
     Color shadeHit(Computations comps);
-    bool isShadowed(Tuple &point);
-    Color colorAt(Ray &ray);
+    bool isShadowed(Tuple &point, const Intersectable *excludeObject = nullptr);
+    Color colorAt(Ray &ray, const Intersectable *excludeObject = nullptr);
+    Color reflectedColor(Computations comps);
     Intersections getIntersections(Ray &ray);
 };
 #endif
