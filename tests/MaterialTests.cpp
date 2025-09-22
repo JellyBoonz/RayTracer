@@ -61,3 +61,50 @@ TEST(MaterialTests, ReflectiveMaterialWithShadeHit)
     Color c = w.shadeHit(comps);
     EXPECT_EQ(c, Color(0.876928, 0.924554, 0.829303));
 }
+
+TEST(MaterialTests, ColorAtWithMutuallyReflectiveSurfaces)
+{
+    World w;
+    w.clear();
+
+    auto lower = std::make_shared<Plane>();
+    lower->setTransform(Transforms().translate(0, -1, 0).getTransformMat());
+    lower->material.reflective = 1.0;
+    w.objects.push_back(lower);
+
+    auto upper = std::make_shared<Plane>();
+    upper->setTransform(Transforms().translate(0, 1, 0).getTransformMat());
+    upper->material.reflective = 1.0;
+    w.objects.push_back(upper);
+
+    Ray r(Tuple::point(0, 0, 0), Tuple::vector(0, 1, 0));
+
+    // This test is mainly to ensure that the recursive reflections terminate
+    // and do not cause a stack overflow. The actual color result is not checked.
+    Color c = w.colorAt(r);
+    EXPECT_TRUE(c.getRed() >= 0.0 && c.getRed() <= 1.0);
+    EXPECT_TRUE(c.getGreen() >= 0.0 && c.getGreen() <= 1.0);
+    EXPECT_TRUE(c.getBlue() >= 0.0 && c.getBlue() <= 1.0);
+}
+
+TEST(MaterialTests, ReflectedColorAtMaxRecursionDepth)
+{
+    World w;
+    auto p = std::make_shared<Plane>();
+    p->setTransform(Transforms().translate(0, -1, 0).getTransformMat());
+    p->material.reflective = 0.5;
+    w.objects.push_back(p);
+
+    Ray r(Tuple::point(0, 0, -3), Tuple::vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+    Intersection i(sqrt(2), p.get());
+    Computations comps(i, r);
+    Color c = w.reflectedColor(comps, 0);
+    EXPECT_EQ(c, Color(0.0, 0.0, 0.0));
+}
+
+TEST(MaterialTests, TransparencyAndRefractiveIndexDefault)
+{
+    Material m;
+    EXPECT_EQ(m.transparency, 0.0);
+    EXPECT_EQ(m.refractiveIndex, 1.0);
+}

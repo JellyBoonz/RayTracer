@@ -27,6 +27,7 @@ int main(void)
     floor.material.color = Color(1, 0.9, 0.9);
     // floor.material.pattern = std::make_shared<StripePattern>(stripe);
     floor.material.specular = 0;
+    floor.material.reflective = 0.5;
 
     Sphere middle;
     Transforms middleTransform;
@@ -40,6 +41,7 @@ int main(void)
     middle.material.color = Color(0.1, 1, 0.5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
+    middle.material.reflective = 0.2;
 
     Sphere right;
     Transforms rightTransform;
@@ -69,7 +71,11 @@ int main(void)
     w.objects.push_back(std::make_shared<Sphere>(right));
     w.light = Light(Tuple::point(-10, 10, -10), Color(1.0, 1.0, 1.0));
 
+    // Low res
     Camera cam = Camera(200, 100, M_PI / 3);
+
+    // High res
+    // Camera cam = Camera(800, 600, M_PI / 3);
     cam.transform = Transforms().viewTransform(Tuple::point(0, 1.5, -5), Tuple::point(0, 1, 0), Tuple::vector(0, 1, 0));
 
     Canvas c = cam.render(w);

@@ -35,18 +35,18 @@ Intersections World::getIntersections(Ray &ray)
     return xs;
 }
 
-Color World::shadeHit(Computations comps)
+Color World::shadeHit(Computations comps, int remaining)
 {
     Color surface = Color(0, 0, 0);
     bool shadowed = isShadowed(comps.overPoint, comps.object);
     surface = light.Lighting(comps.point, comps.normalv, comps.eyev, comps.object->material, *comps.object, shadowed);
 
-    Color reflectedColor = this->reflectedColor(comps);
+    Color reflectedColor = this->reflectedColor(comps, remaining);
 
     return surface + reflectedColor;
 }
 
-Color World::colorAt(Ray &ray, const Intersectable *excludeObject)
+Color World::colorAt(Ray &ray, const Intersectable *excludeObject, int remaining)
 {
     auto intersections = getIntersections(ray);
     auto hit = intersections.hit();
@@ -71,20 +71,25 @@ Color World::colorAt(Ray &ray, const Intersectable *excludeObject)
     if (hit.t >= 0 && hit.object != nullptr)
     {
         Computations comps(hit, ray);
-        return shadeHit(comps);
+        return shadeHit(comps, remaining);
     }
 
     return Color(0, 0, 0);
 }
 
-Color World::reflectedColor(Computations comps)
+Color World::reflectedColor(Computations comps, int remaining)
 {
+    if (remaining <= 0)
+    {
+        return Color(0.0, 0.0, 0.0);
+    }
+
     if (comps.object->material.reflective == 0.0)
     {
         return Color(0.0, 0.0, 0.0);
     }
     Ray reflectRay(comps.overPoint, comps.reflectv);
-    Color c = colorAt(reflectRay, comps.object);
+    Color c = colorAt(reflectRay, comps.object, remaining - 1);
 
     return c * comps.object->material.reflective;
 }
