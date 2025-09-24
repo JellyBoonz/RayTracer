@@ -25,6 +25,7 @@ public:
     bool isShadowed(Tuple &point, const Intersectable *excludeObject = nullptr);
     Color colorAt(Ray &ray, const Intersectable *excludeObject = nullptr, int remaining = 5);
     Color reflectedColor(Computations comps, int remaining = 5);
+    Color refractedColor(Computations comps, int remaining = 5);
     Intersections getIntersections(Ray &ray);
 };
 #endif

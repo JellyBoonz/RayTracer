@@ -18,6 +18,7 @@ private:
 
     Sphere();
 
+    static Sphere glassSphere();
     Matrix getTransform() const override;
     Matrix setTransform(Matrix t) override;
 

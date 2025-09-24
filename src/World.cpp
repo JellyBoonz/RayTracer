@@ -70,7 +70,8 @@ Color World::colorAt(Ray &ray, const Intersectable *excludeObject, int remaining
     // check if object pointer is valid hit.t >= 0
     if (hit.t >= 0 && hit.object != nullptr)
     {
-        Computations comps(hit, ray);
+        std::vector<Intersection> allIntersections = intersections.xs;
+        Computations comps(hit, ray, allIntersections);
         return shadeHit(comps, remaining);
     }
 
@@ -92,6 +93,30 @@ Color World::reflectedColor(Computations comps, int remaining)
     Color c = colorAt(reflectRay, comps.object, remaining - 1);
 
     return c * comps.object->material.reflective;
+}
+
+Color World::refractedColor(Computations comps, int remaining)
+{
+    if (comps.object->material.transparency == 0.0 || remaining <= 0)
+    {
+        return Color(0.0, 0.0, 0.0);
+    }
+    // Snell's Law
+    float nRatio = comps.n1 / comps.n2;
+    float cosI = comps.eyev.dot(comps.normalv);
+    float sin2T = nRatio * nRatio * (1 - cosI * cosI);
+
+    if (sin2T > 1.0)
+    {
+        return Color(0.0, 0.0, 0.0);
+    }
+    float cosT = sqrt(1.0 - sin2T);
+    Tuple direction = comps.normalv * (nRatio * cosI - cosT) - comps.eyev * nRatio;
+    Ray refractRay(comps.underPoint, direction);
+
+    Color c = colorAt(refractRay, nullptr, remaining - 1) * comps.object->material.transparency;
+
+    return c;
 }
 
 bool World::isShadowed(Tuple &point, const Intersectable *excludeObject)

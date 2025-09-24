@@ -6,6 +6,11 @@
 class Intersection
 {
 public:
+    // Define the equality operator for Intersection objects
+    bool operator==(const Intersection& other) const {
+        return t == other.t && object == other.object;
+    }
+public:
     float t; // Distance along the ray where intersection occurs
     const Intersectable *object;
     // Initialize the intersection with a default constructor

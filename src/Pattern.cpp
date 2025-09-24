@@ -72,6 +72,21 @@ Color CheckerPattern::patternAtObject(const Intersectable &object, const Tuple &
     return patternAt(patternPoint);
 }
 
+Color TestPattern::patternAt(const Tuple &point) const
+{
+    return Color(point.x, point.y, point.z);
+}
+
+Color TestPattern::patternAtObject(const Intersectable &object, const Tuple &worldPoint) const
+{
+    Matrix objInv = object.getTransform().inverse();
+    Matrix patInv = this->getTransform().inverse();
+
+    Tuple objectPoint = objInv * worldPoint;
+    Tuple patternPoint = patInv * objectPoint;
+    return patternAt(patternPoint);
+}
+
 Color PerturbedRingPattern::patternAt(const Tuple &point) const
 {
     RingPattern ringPattern = RingPattern(a, b);

@@ -23,3 +23,11 @@ const Tuple Sphere::normalAt(Tuple worldPoint) const
     worldNormal.w = 0;
     return worldNormal.normalize();
 }
+
+Sphere Sphere::glassSphere()
+{
+    Sphere s;
+    s.material.transparency = 1.0;
+    s.material.refractiveIndex = 1.5;
+    return s;
+}

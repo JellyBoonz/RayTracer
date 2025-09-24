@@ -73,6 +73,16 @@ public:
     Color patternAtObject(const Intersectable &object, const Tuple &worldPoint) const;
 };
 
+class TestPattern : public Pattern
+{
+public:
+    TestPattern() : Pattern() {}
+
+    Color patternAt(const Tuple &point) const;
+
+    Color patternAtObject(const Intersectable &object, const Tuple &worldPoint) const;
+};
+
 class PerturbedRingPattern : public Pattern
 {
 public:
