@@ -232,3 +232,86 @@ TEST(MaterialTests, RefractedColorWithRefractedRay)
     Color c = w.refractedColor(comps, 5);
     EXPECT_EQ(c, Color(0.0, 0.994967, 0.1002));
 }
+
+TEST(MaterialTests, ShadeHitWithTransparentMaterial)
+{
+    World w;
+
+    auto floor = std::make_shared<Plane>();
+    floor->setTransform(Transforms().translate(0, -1, 0).getTransformMat());
+    floor->material.transparency = 0.5;
+    floor->material.refractiveIndex = 1.5;
+    w.objects.push_back(floor);
+
+    auto ball = std::make_shared<Sphere>();
+    ball->setTransform(Transforms().translate(0, -3.5, -0.5).getTransformMat());
+    ball->material.color = Color(1, 0, 0);
+    ball->material.ambient = 0.5;
+    w.objects.push_back(ball);
+
+    Ray r(Tuple::point(0, 0, -3), Tuple::vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+    Intersection i(sqrt(2), floor.get());
+    std::vector<Intersection> xs = {i};
+    Computations comps(i, r, xs);
+    Color c = w.shadeHit(comps, 5);
+    EXPECT_EQ(c, Color(0.93642, 0.68642, 0.68642));
+}
+
+TEST(MaterialTests, SchlickApproximationUnderTotalInternalReflection)
+{
+    Sphere s = Sphere::glassSphere();
+    Ray r(Tuple::point(0, 0, sqrt(2) / 2), Tuple::vector(0, 1, 0));
+    Intersection i(-sqrt(2) / 2, &s);
+    Intersection i2(sqrt(2) / 2, &s);
+    std::vector<Intersection> xs = {i, i2};
+    Computations comps(i2, r, xs);
+    float reflectance = World().schlick(comps);
+    EXPECT_FLOAT_EQ(reflectance, 1.0);
+}
+
+TEST(MaterialTests, SchlickApproximationWithPerpendicularViewingAngle)
+{
+    Sphere s = Sphere::glassSphere();
+    Ray r(Tuple::point(0, 0, 0), Tuple::vector(0, 1, 0));
+    Intersection i(-1, &s);
+    Intersection i2(1, &s);
+    std::vector<Intersection> xs = {i, i2};
+    Computations comps(i2, r, xs);
+    float reflectance = World().schlick(comps);
+    EXPECT_FLOAT_EQ(reflectance, 0.04);
+}
+
+TEST(MaterialTests, SchlickApproximationWithSmallAngleAndN2GreaterThanN1)
+{
+    Sphere s = Sphere::glassSphere();
+    Ray r(Tuple::point(0, 0.99, -2), Tuple::vector(0, 0, 1));
+    Intersection i(1.8589, &s);
+    std::vector<Intersection> xs = {i};
+    Computations comps(i, r, xs);
+    float reflectance = World().schlick(comps);
+    EXPECT_NEAR(reflectance, 0.48873, 0.0001);
+}
+
+TEST(MaterialTests, ShadeHitWithReflectiveAndTransparentMaterial)
+{
+    World w;
+    auto floor = std::make_shared<Plane>();
+    floor->setTransform(Transforms().translate(0, -1, 0).getTransformMat());
+    floor->material.reflective = 0.5;
+    floor->material.transparency = 0.5;
+    floor->material.refractiveIndex = 1.5;
+    w.objects.push_back(floor);
+
+    auto ball = std::make_shared<Sphere>();
+    ball->setTransform(Transforms().translate(0, -3.5, -0.5).getTransformMat());
+    ball->material.color = Color(1, 0, 0);
+    ball->material.ambient = 0.5;
+    w.objects.push_back(ball);
+
+    Ray r(Tuple::point(0, 0, -3), Tuple::vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+    Intersection i(sqrt(2), floor.get());
+    std::vector<Intersection> xs = {i};
+    Computations comps(i, r, xs);
+    Color c = w.shadeHit(comps, 5);
+    EXPECT_EQ(c, Color(0.933922, 0.696443, 0.692436));
+}

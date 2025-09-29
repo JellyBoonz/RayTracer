@@ -22,6 +22,7 @@ public:
     void render();
     void clear();
     Color shadeHit(Computations comps, int remaining = 5);
+    float schlick(Computations comps);
     bool isShadowed(Tuple &point, const Intersectable *excludeObject = nullptr);
     Color colorAt(Ray &ray, const Intersectable *excludeObject = nullptr, int remaining = 5);
     Color reflectedColor(Computations comps, int remaining = 5);

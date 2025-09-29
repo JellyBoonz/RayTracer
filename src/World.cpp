@@ -42,8 +42,39 @@ Color World::shadeHit(Computations comps, int remaining)
     surface = light.Lighting(comps.point, comps.normalv, comps.eyev, comps.object->material, *comps.object, shadowed);
 
     Color reflectedColor = this->reflectedColor(comps, remaining);
+    Color refractedColor = this->refractedColor(comps, remaining);
 
-    return surface + reflectedColor;
+    Material material = comps.object->material;
+    if (material.reflective > 0 && material.transparency > 0)
+    {
+        float reflectance = schlick(comps);
+        return surface + reflectedColor * reflectance + refractedColor * (1 - reflectance);
+    }
+
+    return surface + reflectedColor + refractedColor;
+}
+
+float World::schlick(Computations comps)
+{
+    float cos = comps.eyev.dot(comps.normalv);
+
+    // Total internal reflection can only occur if n1 > n2
+    if (comps.n1 > comps.n2)
+    {
+        float n = comps.n1 / comps.n2;
+        float sin2T = n * n * (1.0 - cos * cos);
+        if (sin2T > 1.0) // Impossible sin angle. TIR
+        {
+            return 1.0;
+        }
+
+        float cosT = sqrt(1.0 - sin2T);
+        cos = cosT; // When n1 > n2, use cosT instead
+    }
+
+    float r0 = ((comps.n1 - comps.n2) / (comps.n1 + comps.n2));
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * pow((1 - cos), 5);
 }
 
 Color World::colorAt(Ray &ray, const Intersectable *excludeObject, int remaining)
