@@ -17,3 +17,6 @@ set(SOURCES
 
 # Create an executable for the ray tracer
 add_executable(ray_tracer ${SOURCES})
+
+# Link threading library
+target_link_libraries(ray_tracer Threads::Threads)

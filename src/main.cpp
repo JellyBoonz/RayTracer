@@ -72,10 +72,10 @@ int main(void)
     w.light = Light(Tuple::point(-10, 10, -10), Color(1.0, 1.0, 1.0));
 
     // Low res
-    Camera cam = Camera(200, 100, M_PI / 3);
+    // Camera cam = Camera(200, 100, M_PI / 3);
 
     // High res
-    // Camera cam = Camera(800, 600, M_PI / 3);
+    Camera cam = Camera(800, 600, M_PI / 3);
     cam.transform = Transforms().viewTransform(Tuple::point(0, 1.5, -5), Tuple::point(0, 1, 0), Tuple::vector(0, 1, 0));
 
     Canvas c = cam.render(w);

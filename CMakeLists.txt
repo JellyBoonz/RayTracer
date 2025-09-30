@@ -8,6 +8,9 @@ project(FirstImage VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Enable threading support
+find_package(Threads REQUIRED)
+
 # Enable testing
 enable_testing()
 

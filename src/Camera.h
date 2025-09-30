@@ -6,6 +6,10 @@
 #include "Ray.h"
 #include "World.h"
 #include "Canvas.h"
+#include <thread>
+#include <vector>
+#include <future>
+#include <algorithm>
 
 class Camera
 {
@@ -53,15 +57,47 @@ public:
     Canvas render(World &world)
     {
         Canvas image(hsize, vsize);
-        for (int y = 0; y < vsize; y++)
+
+        // Determine number of threads (use hardware concurrency)
+        unsigned int numThreads = std::thread::hardware_concurrency();
+        if (numThreads == 0)
+            numThreads = 4; // fallback
+
+        // Create futures for each thread
+        std::vector<std::future<void>> futures;
+
+        // Calculate rows per thread
+        int rowsPerThread = vsize / numThreads;
+        int remainingRows = vsize % numThreads;
+
+        int startRow = 0;
+        for (unsigned int t = 0; t < numThreads; ++t)
         {
-            for (int x = 0; x < hsize; x++)
+            int endRow = startRow + rowsPerThread;
+            if (t < remainingRows)
+                endRow++; // Distribute remaining rows
+
+            // Launch thread for this row range
+            futures.push_back(std::async(std::launch::async, [&, startRow, endRow]()
             {
-                Ray ray = rayForPixel(x, y);
-                Color color = world.colorAt(ray);
-                image.writePixel(x, y, color);
-            }
+                for (int y = startRow; y < endRow; y++) {
+                    for (int x = 0; x < hsize; x++) {
+                        Ray ray = rayForPixel(x, y);
+                        Color color = world.colorAt(ray);
+                        image.writePixel(x, y, color);
+                    }
+                } 
+            }));
+
+            startRow = endRow;
         }
+
+        // Wait for all threads to complete
+        for (auto &future : futures)
+        {
+            future.wait();
+        }
+
         return image;
     }
 };
