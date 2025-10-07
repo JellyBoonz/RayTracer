@@ -51,6 +51,8 @@ int main(void)
     right.material.pattern = std::make_shared<GradientPattern>(gradient);
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
+    right.material.transparency = 0.5;
+    right.material.refractiveIndex = 1.5;
     right.setTransform(rightTransform.getTransformMat());
 
     Sphere left;
